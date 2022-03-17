@@ -1,0 +1,44 @@
+package jpp.gametheory.rockPaperScissors;
+
+import jpp.gametheory.generic.IGameRound;
+import jpp.gametheory.generic.IPlayer;
+import jpp.gametheory.generic.IReward;
+
+import java.util.Set;
+
+public class RPSReward implements IReward<RPSChoice> {
+
+    @Override
+    public int getReward(IPlayer<RPSChoice> player, IGameRound<RPSChoice> gameRound) {
+
+        Set<IPlayer<RPSChoice>> otherPlayers = gameRound.getOtherPlayers(player);
+
+        for(IPlayer<RPSChoice> p : otherPlayers){
+            switch (gameRound.getChoice(player)){
+                case ROCK:
+                    switch (gameRound.getChoice(p)){
+                        case SCISSORS:
+                            return 2;
+                        case PAPER:
+                            return -1;
+                    }
+                case SCISSORS:
+                    switch (gameRound.getChoice(p)){
+                        case PAPER:
+                            return 2;
+                        case ROCK:
+                            return  -1;
+                    }
+                case PAPER:
+                    switch (gameRound.getChoice(p)){
+                        case ROCK:
+                            return  2;
+                        case SCISSORS:
+                            return -1;
+                    }
+            }
+        }
+
+        return 0;
+    }
+}

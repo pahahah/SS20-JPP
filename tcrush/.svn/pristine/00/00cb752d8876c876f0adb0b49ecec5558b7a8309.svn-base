@@ -1,0 +1,86 @@
+package jpp.tcrush.gui;
+import java.awt.Graphics;
+import java.awt.image.BufferStrategy;
+
+public class Parking implements Runnable{
+
+    // 프로그램 기본 설정
+    private Display display;
+    public int width, height;
+    public String title;
+
+    // 프로그램 작동과 관련한 변수
+    private boolean running = false;
+    private Thread thread;
+
+    // 트리플 버퍼링 기술 구현
+    private BufferStrategy bs;
+    private Graphics g;
+
+    public Parking(String title, int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.title = title;
+    }
+
+    // Display 클래스 객체를 선언하여 초기화
+    private void init() {
+        display = new Display(title, width, height);
+    }
+
+    private void tick() {
+
+    }
+
+    private void render() {
+        // 트리플 버퍼링 구현
+        bs = display.getCanvas().getBufferStrategy();
+        if(bs == null) {
+            display.getCanvas().createBufferStrategy(3);
+            return;
+        }
+        g = bs.getDrawGraphics();
+        // 스크린을 정리
+        g.clearRect(0, 0, width, height);
+
+        // 실제로 그리는 공간
+        g.fillRect(0, 0, width, height);
+
+        // 그리기가 끝나는 시점
+        bs.show();
+        g.dispose();
+    }
+
+    // 실제로 동작하는 쓰레드
+    public void run() {
+        init();
+
+        while(running) {
+            tick();
+            render();
+        }
+
+        stop();
+    }
+
+    // 쓰레드를 실행하는 함수
+    public synchronized void start() {
+        if(running)
+            return;
+        running = true;
+        thread = new Thread(this);
+        thread.start();
+    }
+
+    // 쓰레드를 종료하는 함수
+    public synchronized void stop() {
+        if(!running)
+            return;
+        running = false;
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}

@@ -1,0 +1,55 @@
+package turingMachine;
+
+import turingMachine.tape.Direction;
+import turingMachine.tape.MultiTape;
+import finiteStateMachine.AbstractFiniteStateMachine;
+import turingMachine.tape.MultiTapeReadWriteData;
+
+public class TuringMachine<T> extends AbstractFiniteStateMachine<MultiTapeReadWriteData<T>, TuringTransitionOutput<T>> {
+
+    private int tapeCount;
+    private MultiTape<T> tapes;
+
+    public TuringMachine(int tapeCount){
+        this.tapeCount = tapeCount;
+        tapes = new MultiTape<>(tapeCount);
+    }
+
+    public void run(){
+        while (!isInAcceptedState()){
+            transit();
+        }
+    }
+
+    public void transit(){
+
+    }
+
+    public int getTapeCount(){
+        return tapeCount;
+    }
+
+    public MultiTape<T> getTapes(){
+        return tapes;
+    }
+
+
+    @Override
+    protected void processOutput(TuringTransitionOutput<T> output) {
+
+    }
+
+
+    public static void main(String[] args){
+        TuringMachine<Character> turingMachine = new TuringMachine<>(2);
+        turingMachine.getTapes().getTapes().get(0).write('a');
+        turingMachine.getTapes().getTapes().get(0).move(Direction.RIGHT);
+        turingMachine.getTapes().getTapes().get(0).write('b');
+        System.out.print(turingMachine.getTapeCount() + "\n" + turingMachine.getTapes().getTapes().get(0));
+        turingMachine.addState("S");
+        // turingMachine.getTapes();
+
+
+    }
+}
+

@@ -1,0 +1,58 @@
+package de.uniwue.jpp.oscidrawing;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class InfSignal extends Signal {
+
+
+    private int sampleRate;
+    private List<List<Double>> channels;
+
+
+
+    public InfSignal (int sampleRate, List<List<Double>> channels){
+
+        this.sampleRate = sampleRate;
+        this.channels = new ArrayList<>(channels);
+    }
+
+    @Override
+    public boolean isInfinite() {
+        return true;
+    }
+
+    @Override
+    public int getSize() {
+        return -1;
+    }
+
+    @Override
+    public int getChannelCount() {
+        return channels.size();
+    }
+
+    @Override
+    public int getSampleRate() {
+        return this.sampleRate;
+    }
+
+    @Override
+    public double getValueAtValid(int channel, int index) {
+
+        if(channel < 0 || channel >= channels.size()){
+            return -1;
+        }
+        if(index < 0 || index >= channels.get(channel).size()){
+            return -1;
+        }
+
+        return channels.get(channel).get(index);
+
+
+    }
+
+
+
+
+}

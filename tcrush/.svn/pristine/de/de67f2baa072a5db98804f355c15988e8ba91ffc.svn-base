@@ -1,0 +1,23 @@
+package jpp.tcrush.gui;
+
+import javafx.scene.shape.Rectangle;
+import jpp.tcrush.gamelogic.utils.Coordinate2D;
+
+public class CoordFieldElement extends Rectangle {
+    private int xCoord;
+    private int yCoord;
+
+    public CoordFieldElement(double width, double height, Coordinate2D coordinate2D) {
+        super(width, height);
+        this.xCoord = coordinate2D.getX();
+        this.yCoord = coordinate2D.getY();
+    }
+
+    public int getXCoord() {
+        return xCoord;
+    }
+
+    public int getYCoord() {
+        return yCoord;
+    }
+}

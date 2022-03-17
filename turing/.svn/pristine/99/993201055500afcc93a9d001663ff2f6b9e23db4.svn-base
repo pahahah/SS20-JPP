@@ -1,0 +1,26 @@
+package finiteStateMachine.state;
+
+public class Transition<O> {
+    private String targetState;
+    private O output;
+
+    public Transition(String targetState, O output){
+        this.targetState = targetState;
+        this.output = output;
+
+    }
+
+    public String getNextState(){
+
+        return this.targetState;
+    }
+
+
+    public O getOutput() {
+        return this.output;
+    }
+
+    public String toString(){
+        return targetState + "," + output.toString();
+    }
+}

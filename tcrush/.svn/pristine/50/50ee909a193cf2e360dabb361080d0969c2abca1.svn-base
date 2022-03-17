@@ -1,0 +1,51 @@
+package jpp.tcrush.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class Display {
+    private JFrame frame;
+    private Canvas canvas;
+    private String title;
+    private int width, height;
+
+    private JTextField inputField = new JTextField();
+    private JButton levelLoad = new JButton("Level laden");
+    private JButton levelSave = new JButton("Level speichern");
+    private JButton levelReset = new JButton("Level zurücksetzen");
+
+    public Display(String title, int width, int height){
+        this.title = title;
+        this.width = width;
+        this.height = height;
+        createDisplay();
+    }
+
+    private void createDisplay(){
+        frame = new JFrame(title);
+        frame.setSize(width + 300, height);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        canvas = new Canvas();
+        canvas.setPreferredSize(new Dimension(width, height));
+        canvas.setMaximumSize(new Dimension(width, height));
+        canvas.setMinimumSize(new Dimension(width, height));
+
+
+        levelLoad.setBounds(100, 10, 80, 20);
+        levelSave.setBounds(100, 10, 120, 20);
+        levelReset.setBounds( 400, 10, 150, 20);
+
+        frame.add(levelLoad);
+        frame.add(levelSave);
+        frame.add(levelReset);
+        frame.add(canvas);
+    }
+
+    public Canvas getCanvas(){
+        return canvas;
+    }
+}

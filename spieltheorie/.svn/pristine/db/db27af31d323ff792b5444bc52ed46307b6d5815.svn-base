@@ -1,0 +1,45 @@
+package jpp.gametheory.rockPaperScissors.strategies;
+
+import jpp.gametheory.generic.IGameRound;
+import jpp.gametheory.generic.IPlayer;
+import jpp.gametheory.generic.IReward;
+import jpp.gametheory.generic.IStrategy;
+import jpp.gametheory.rockPaperScissors.RPSChoice;
+
+import java.util.Iterator;
+import java.util.List;
+
+public class MostSuccessful implements IStrategy<RPSChoice> {
+    IStrategy<RPSChoice> alternate;
+    IReward<RPSChoice> reward;
+    RPSChoice choice;
+    public MostSuccessful(IStrategy<RPSChoice> alternate, IReward<RPSChoice> reward){
+        this.alternate = alternate;
+        this.reward = reward;
+    }
+
+    @Override
+    public String name() {
+        return "Most Successful Choice (Alternate: " + alternate.name() + ")";
+    }
+
+    @Override
+    public RPSChoice getChoice(IPlayer<RPSChoice> player, List<IGameRound<RPSChoice>> previousRounds) {
+        int score = 0;
+
+        Iterator iterator = previousRounds.iterator();
+        while (iterator.hasNext()){
+            IGameRound<RPSChoice> gameRound = (IGameRound<RPSChoice>) iterator.next();
+            if(reward.getReward(player,gameRound) > score){
+                score = reward.getReward(player,gameRound);
+                choice = gameRound.getChoice(player);
+            }
+
+        }
+        if(!(choice==null)){
+            return choice;
+        }else {
+            return alternate.getChoice(player,previousRounds);
+        }
+    }
+}

@@ -1,0 +1,14 @@
+package jpp.tcrush.gui;
+
+import javafx.stage.Stage;
+import jpp.tcrush.gamelogic.Level;
+
+public class LevelController {
+    private Stage primaryStage;
+    private Level level;
+
+
+    public LevelController(Stage primaryStage){
+
+    }
+}

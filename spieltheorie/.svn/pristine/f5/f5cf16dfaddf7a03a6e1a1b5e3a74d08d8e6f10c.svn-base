@@ -1,0 +1,118 @@
+package jpp.gametheory.generic;
+
+import java.util.*;
+
+public class Game<C extends IChoice> {
+    Set<IPlayer<C>> players;
+    IReward<C> reward;
+    List<IGameRound<C>> gameRounds = new ArrayList<>();
+    IGameRound<C> gameRound;
+    Map<IPlayer<C>, C> playerChoices;
+    Map<IPlayer<C>, Integer> playerRewards;
+
+    public Game(Set<IPlayer<C>> players, IReward<C> reward){
+        if(players.isEmpty()){
+            throw new IllegalArgumentException();
+        }
+        this.players = players;
+        this.reward = reward;
+
+    }
+
+    public Set<IPlayer<C>> getPlayers(){
+        return players;
+    }
+
+    public IGameRound<C> playRound(){
+        playerChoices = new HashMap<>();
+        for(IPlayer<C> player : players){
+            playerChoices.put(player, player.getChoice(gameRounds));
+        }
+        gameRound = new GameRound<>(playerChoices);
+
+        gameRounds.add(gameRound);
+
+        for(IPlayer<C> player : players){
+            playerRewards.put(player, reward.getReward(player,gameRound));
+        }
+
+        return gameRound;
+    }
+    public void playNRounds(int n){
+        if(n < 1){
+            throw new IllegalArgumentException("n is smaller than 1");
+        }
+
+        for(int i = 0; i < n; i++){
+            playRound();
+        }
+    }
+
+    public Optional<IGameRound<C>> undoRound(){
+        if(gameRounds.isEmpty()){
+            return Optional.empty();
+        }else {
+            gameRounds.remove(gameRounds.size()-1);
+            return Optional.of(gameRound);
+        }
+    }
+
+    public void undoNRounds(int n){
+        if(n < 1){
+            throw new IllegalArgumentException("n is smaller than 1");
+        }
+        for(int i = 0; i < n; i++){
+            if(gameRounds.isEmpty()){
+                break;
+            }
+            undoRound();
+        }
+    }
+
+    public List<IGameRound<C>> getPlayedRounds(){
+        return gameRounds;
+    }
+
+    public int getPlayerProfit(IPlayer<C> player){
+        playerRewards = new HashMap<IPlayer<C>, Integer>();
+
+        if(!playerRewards.containsKey(player)){
+            throw new IllegalArgumentException("This player plays not this round");
+        }
+
+
+        return playerRewards.get(player);
+    }
+    public Optional<IPlayer<C>> getBestPlayer(){
+        int max = 0;
+        IPlayer<C> bestPlayer = null;
+        for(IPlayer<C> player : players){
+            if(playerRewards.get(player) > max){
+                bestPlayer = player;
+            }
+        }
+        if(bestPlayer != null){
+            return Optional.of(bestPlayer);
+        }else{
+            return Optional.empty();
+        }
+    }
+    public String toString(){
+        StringBuilder sb = new StringBuilder("Spiel nach " + gameRounds.size() + " Runden:\n");
+        sb.append("Profit : Spieler\n");
+        TreeMap<Integer, IPlayer<C>> rewardsMap = new TreeMap<>();
+
+
+        for(IPlayer<C> player : players){
+            rewardsMap.put(playerRewards.get(player), player);
+        }
+
+        for(Map.Entry<Integer, IPlayer<C>> entry : rewardsMap.descendingMap().entrySet()){
+            for(IPlayer<C> player : players){
+                sb.append(entry.getKey() + " : " + player.toString() + "\n");
+            }
+        }
+
+        return String.valueOf(sb);
+    }
+}

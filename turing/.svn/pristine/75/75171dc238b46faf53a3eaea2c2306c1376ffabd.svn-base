@@ -1,0 +1,64 @@
+package turingMachine.io;
+
+import turingMachine.TuringMachine;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+
+public class TuringMachineReader {
+    public static TuringMachine<Character> read(InputStream input) {
+        String data = "";
+        byte[] buffer = new byte[100];
+        int numRead = -1;
+        while (true) {
+            try {
+                numRead = input.read(buffer);
+            } catch (IOException e) {
+                throw new IllegalArgumentException(e);
+            }
+            if (numRead == 100) {
+                data += new String(buffer);
+            } else {
+                if (numRead != -1) {
+                    data += new String(buffer, 0, numRead);
+
+                }
+                break;
+            }
+        }
+
+        TuringMachine<Character> turingMachine = new TuringMachine<>(data.length());
+
+
+        return turingMachine;
+    }
+
+    public static TuringMachine<Character> read(Reader input){
+        String data= "";
+        char[] buffer = new char[100];
+        int numRead = -1;
+
+        while (true){
+            try{
+                numRead = input.read(buffer);
+            }catch (IOException e){
+                throw new IllegalArgumentException(e);
+            }
+            if(numRead == 100){
+                data += new String(buffer);
+            }else {
+                if(numRead != -1){
+                    data += new String(buffer, 0, numRead);
+                }
+                break;
+            }
+        }
+
+        TuringMachine<Character> turingMachine = new TuringMachine<>(data.length());
+
+
+        return turingMachine;
+    }
+}
+

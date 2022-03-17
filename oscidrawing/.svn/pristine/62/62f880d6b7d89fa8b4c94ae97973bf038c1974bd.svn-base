@@ -1,0 +1,59 @@
+package de.uniwue.jpp.oscidrawing.visualization;
+
+import de.uniwue.jpp.oscidrawing.Signal;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+public class Impl_Osci2DPlotter implements Osci2DPlotter {
+    private int size;
+    private double scale;
+    private BufferedImage bimage;
+
+    public Impl_Osci2DPlotter(int size, double scale, Color bgcol){
+        this.size = size;
+        this.scale = scale;
+
+        bimage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = bimage.createGraphics();
+        graphics2D.setBackground(bgcol);
+
+
+    }
+
+    @Override
+    public int signalValToImageXCoord(double val) {
+        double in_min = -scale;
+        double in_max = scale;
+        int out_min = 0;
+        int out_max = size - 1;
+        return (int) ((val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min);
+    }
+
+    @Override
+    public int signalValToImageYCoord(double val) {
+        double in_min = scale;
+        double in_max = -scale;
+        int out_min = 0;
+        int out_max = size - 1;
+        return (int) ((val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min);
+    }
+
+    @Override
+    public void drawSignalAt(Signal signal, int index, Color col) {
+
+        if(signal.getChannelCount() != 2){
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public void drawSignal(Signal signal, Color col) {
+
+    }
+
+    @Override
+    public BufferedImage getImage() {
+        return bimage;
+    }
+}

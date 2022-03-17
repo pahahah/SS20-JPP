@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tcrush_console">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/tcrush_console.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,210 @@
+package turingMachine.io;
+
+import turingMachine.TuringMachine;
+import turingMachine.TuringTransitionOutput;
+import turingMachine.tape.Direction;
+import turingMachine.tape.MultiTape;
+import turingMachine.tape.MultiTapeReadWriteData;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+
+public class TuringMachineReader {
+
+    private static List<String> getCommendlines (String str){
+        String[] lines = str.split("\n");
+        List<String> list = new ArrayList<>(Arrays.asList(lines));
+        for(String s : list){
+            if(s.startsWith("#") || s.equals("")){
+                list.remove(s);
+            }
+        }
+        return list;
+    }
+
+    private static void addTranstions(TuringMachine<Character> machine, String str){
+        String[] transitions = str.split("\n");
+        for(String s : transitions){
+
+            s.replace("-> ", "");
+
+            int index = s.indexOf(',');
+            if(index == -1){
+                throw new IllegalArgumentException();
+            }
+            String startState = s.substring(0, index);
+            s = s.substring(index + 1);
+
+            MultiTapeReadWriteData<Character> inputData = new MultiTapeReadWriteData<>(machine.getTapeCount());
+            index = s.indexOf(' ');
+            if(index == -1){
+                throw new IllegalArgumentException();
+            }
+            String input = s.substring(0, index);
+            char[] charInput = input.toCharArray();
+            if(charInput.length != machine.getTapeCount()){
+                throw new IllegalArgumentException();
+            }
+            for(int i = 0; i < charInput.length; i++){
+                if(charInput[i] != '_'){
+                    inputData.set(i, charInput[i]);
+                }else {
+                    inputData.set(i, null);
+                }
+            }
+
+            s = s.substring(index + 1);
+
+            index = s.indexOf(',');
+            String targetState = s.substring(0, index);
+            s = s.substring(index + 1);
+
+            MultiTapeReadWriteData<Character> outputData = new MultiTapeReadWriteData<>(machine.getTapeCount());
+
+            index = s.indexOf(',');
+            if(index == -1){
+                throw new IllegalArgumentException();
+            }
+
+            String output = s.substring(0, index);
+            char[] charOutput = output.toCharArray();
+
+            if(charOutput.length != machine.getTapeCount()){
+                throw new IllegalArgumentException();
+            }
+            for(int i = 0; i < charOutput.length; i++){
+                if(charOutput[i] != '_'){
+                    outputData.set(i, charOutput[i]);
+                }else {
+                    outputData.set(i, null);
+                }
+            }
+
+            s = s.substring(index + 1);
+
+            Direction[] directions = new Direction[machine.getTapeCount()];
+            char[] chDir = s.toCharArray();
+            if(chDir.length != machine.getTapeCount()){
+                throw new IllegalArgumentException();
+            }
+            for(int i =0; i < chDir.length; i++){
+
+                switch (chDir[i]) {
+                    case 'R':
+                        directions[i] = Direction.RIGHT;
+                        break;
+                    case 'L':
+                        directions[i] = Direction.LEFT;
+                        break;
+                    case 'N':
+                        directions[i] = Direction.NON;
+                        break;
+                    default:
+                        throw new IllegalArgumentException();
+                }
+            }
+
+            TuringTransitionOutput<Character> transitionOutput = new TuringTransitionOutput<>(outputData, directions);
+
+            machine.addTransition(startState, inputData, targetState, transitionOutput);
+        }
+    }
+
+
+    public static TuringMachine<Character> read(InputStream input) {
+
+        Scanner s = new Scanner(input).useDelimiter("\\A");
+        String inputAsString = s.hasNext() ? s.next() : "";
+
+        List<String> list = new ArrayList<>(getCommendlines(inputAsString));
+
+        if(list.size()!=6){
+            throw new IllegalArgumentException();
+        }
+
+        int tapeCount = Integer.parseInt(list.get(0));
+
+        String[] band = list.get(1).split(":");
+        int positon = Integer.parseInt(band[0]);
+        int size = band[1].length();
+        Character[] bandArray = new Character[size];
+        for(int i = 0; i < size; i++){
+            bandArray[i] = band[1].charAt(i);
+        }
+
+        TuringMachine<Character> turingMachine = new TuringMachine<>(tapeCount);
+        turingMachine.getTapes().getTapes().get(0).setTape(bandArray,positon);
+
+        String state = list.get(2);
+        String[] states = state.split(",");
+
+        for(String str : states){
+            turingMachine.addState(str);
+        }
+
+        turingMachine.setCurrentState(list.get(3));
+
+        turingMachine.getState(list.get(4)).setAccepted(true);
+
+        addTranstions(turingMachine, list.get(5));
+
+        return turingMachine;
+    }
+
+    public static TuringMachine<Character> read(Reader input) throws IOException {
+        char[] buffer = new char[4096];
+        StringBuilder builder = new StringBuilder();
+        int numChars;
+
+        while ((numChars = input.read(buffer)) >=0){
+            builder.append(buffer, 0, numChars);
+        }
+
+        String inputAsString = builder.toString();
+
+        List<String> list = new ArrayList<>(getCommendlines(inputAsString));
+
+        if(list.size()!=6){
+            throw new IllegalArgumentException();
+        }
+
+        int tapeCount = Integer.parseInt(list.get(0));
+
+        String[] band = list.get(1).split(":");
+        int positon = Integer.parseInt(band[0]);
+        int size = band[1].length();
+        Character[] bandArray = new Character[size];
+        for(int i = 0; i < size; i++){
+            bandArray[i] = band[1].charAt(i);
+        }
+
+        TuringMachine<Character> turingMachine = new TuringMachine<>(tapeCount);
+        turingMachine.getTapes().getTapes().get(0).setTape(bandArray,positon);
+
+        String state = list.get(2);
+        String[] states = state.split(",");
+
+        for(String str : states){
+            turingMachine.addState(str);
+        }
+
+        turingMachine.setCurrentState(list.get(3));
+
+        turingMachine.getState(list.get(4)).setAccepted(true);
+
+        addTranstions(turingMachine, list.get(5));
+
+        return turingMachine;
+    }
+
+    public static void main(String[] args){
+
+    }
+
+
+}
+

@@ -1,0 +1,95 @@
+package turingMachine;
+
+import turingMachine.tape.Direction;
+import turingMachine.tape.MultiTape;
+import finiteStateMachine.AbstractFiniteStateMachine;
+import turingMachine.tape.MultiTapeReadWriteData;
+import turingMachine.tape.Tape;
+
+public class TuringMachine<T> extends AbstractFiniteStateMachine<MultiTapeReadWriteData<T>, TuringTransitionOutput<T>> {
+
+    private int tapeCount;
+    private MultiTape<T> tapes;
+
+    public TuringMachine(int tapeCount){
+        this.tapeCount = tapeCount;
+        tapes = new MultiTape<>(tapeCount);
+    }
+
+    public void run(){
+        while (!isInAcceptedState()){
+            transit();
+        }
+    }
+
+    public void transit(){
+        while (!isInAcceptedState()){
+            transit(tapes.read());
+
+        }
+    }
+
+    public int getTapeCount(){
+        return tapeCount;
+    }
+
+    public MultiTape<T> getTapes(){
+        return tapes;
+    }
+
+
+    @Override
+    public void processOutput(TuringTransitionOutput<T> output) {
+        tapes.write(output.getToWrite());
+        tapes.move(output.getDirections());
+    }
+
+
+
+    public static void main(String[] args){
+        TuringMachine<Character> turingMachine = new TuringMachine<>(1);
+
+
+        turingMachine.getTapes().getTapes().get(0).setTape(new Character[]{'1', '1', '0', '0', '0'},0);
+        turingMachine.addState("s1");
+        turingMachine.addState("s2");
+        turingMachine.addState("s3");
+        turingMachine.addState("s4");
+        turingMachine.addState("s5");
+        turingMachine.addState("s6");
+
+        turingMachine.setCurrentState("s1");
+        turingMachine.getState("s6").setAccepted(true);
+
+
+        turingMachine.addTransition1(turingMachine,"s1", "s2", '1', '0', Direction.RIGHT);
+        turingMachine.addTransition1(turingMachine,"s1", "s6", '0', '0', Direction.NON);
+        turingMachine.addTransition1(turingMachine,"s2", "s2", '1', '1', Direction.RIGHT);
+        turingMachine.addTransition1(turingMachine,"s2", "s3", '0', '0', Direction.RIGHT);
+        turingMachine.addTransition1(turingMachine,"s3", "s3", '1', '1', Direction.RIGHT);
+        turingMachine.addTransition1(turingMachine,"s3", "s4", '0', '1', Direction.LEFT);
+        turingMachine.addTransition1(turingMachine,"s4", "s4", '1', '1', Direction.LEFT);
+        turingMachine.addTransition1(turingMachine,"s4", "s5", '0', '0', Direction.LEFT);
+        turingMachine.addTransition1(turingMachine,"s5", "s5", '1', '1', Direction.LEFT);
+        turingMachine.addTransition1(turingMachine,"s5", "s1", '0', '1', Direction.RIGHT);
+
+        System.out.println(turingMachine.getCurrentState());
+        System.out.println(turingMachine.getTapes().read());
+        System.out.println(turingMachine.getTapes().toString());
+        turingMachine.run();
+        System.out.println(turingMachine.getTapes().toString());
+
+
+    }
+    void addTransition1(TuringMachine<Character> machine, String startState, String targetState, Character input, Character output, Direction direction){
+        MultiTapeReadWriteData<Character> inputData = new MultiTapeReadWriteData<>(1);
+        inputData.set(0,input);
+        MultiTapeReadWriteData<Character> outputData = new MultiTapeReadWriteData<>(1);
+        outputData.set(0,output);
+        TuringTransitionOutput<Character> transitionOutput = new TuringTransitionOutput<>(outputData, direction);
+        machine.addTransition(startState,inputData,targetState,transitionOutput);
+    }
+
+
+}
+

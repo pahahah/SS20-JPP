@@ -1,0 +1,48 @@
+package jpp.gametheory.rockPaperScissors;
+
+import jpp.gametheory.generic.IGameRound;
+import jpp.gametheory.generic.IPlayer;
+import jpp.gametheory.generic.IReward;
+
+import java.util.Iterator;
+import java.util.Set;
+
+public class RPSReward implements IReward<RPSChoice> {
+    int score = 0;
+    @Override
+    public int getReward(IPlayer<RPSChoice> player, IGameRound<RPSChoice> gameRound) {
+        Set<IPlayer<RPSChoice>> otherPlayers = gameRound.getOtherPlayers(player);
+        if(gameRound.getChoice(player).equals(RPSChoice.ROCK)){
+            Iterator<IPlayer<RPSChoice>> iterator = otherPlayers.iterator();
+            while (iterator.hasNext()){
+                IPlayer<RPSChoice> otherPlayer = iterator.next();
+                if(gameRound.getChoice(otherPlayer).equals(RPSChoice.PAPER)){
+                    score = score - 1;
+                }else if(gameRound.getChoice(otherPlayer).equals(RPSChoice.SCISSORS)){
+                    score = score + 2;
+                }
+            }
+        }else if (gameRound.getChoice(player).equals(RPSChoice.PAPER)){
+            Iterator<IPlayer<RPSChoice>> iterator = otherPlayers.iterator();
+            while (iterator.hasNext()){
+                IPlayer<RPSChoice> otherPlayer = iterator.next();
+                if(gameRound.getChoice(otherPlayer).equals(RPSChoice.SCISSORS)){
+                    score = score - 1;
+                }else if(gameRound.getChoice(otherPlayer).equals(RPSChoice.ROCK)){
+                    score = score + 2;
+                }
+            }
+        }else if(gameRound.getChoice(player).equals(RPSChoice.SCISSORS)){
+            Iterator<IPlayer<RPSChoice>> iterator = otherPlayers.iterator();
+            while (iterator.hasNext()){
+                IPlayer<RPSChoice> otherPlayer = iterator.next();
+                if(gameRound.getChoice(otherPlayer).equals(RPSChoice.ROCK)){
+                    score = score - 1;
+                }else if(gameRound.getChoice(otherPlayer).equals(RPSChoice.PAPER)){
+                    score = score + 2;
+                }
+            }
+        }
+        return score;
+    }
+}

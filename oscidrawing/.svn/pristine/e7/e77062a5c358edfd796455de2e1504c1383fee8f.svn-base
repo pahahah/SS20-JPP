@@ -1,0 +1,56 @@
+package de.uniwue.jpp.oscidrawing;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class LimSignal extends Signal{
+
+    private int size;
+    private int sampleRate;
+    private List<List<Double>> channels;
+
+
+    public LimSignal (int size, int sampleRate, List<List<Double>> channels){
+        this.size = size;
+        this.sampleRate = sampleRate;
+        this.channels = new ArrayList<>(channels);
+
+    }
+
+    @Override
+    public boolean isInfinite() {
+        return false;
+    }
+
+    @Override
+    public int getSize() {
+        return this.size;
+    }
+
+    @Override
+    public int getChannelCount() {
+        return channels.size();
+    }
+
+    @Override
+    public int getSampleRate() {
+        return this.sampleRate;
+    }
+
+    @Override
+    public double getValueAtValid(int channel, int index) {
+
+        if(channel < 0 || channel >= channels.size()){
+            return -1;
+        }
+        if(index < 0 || index >= channels.get(channel).size()){
+            return -1;
+        }
+
+        return channels.get(channel).get(index);
+
+    }
+
+
+
+}
